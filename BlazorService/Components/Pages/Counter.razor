@@ -1,0 +1,36 @@
+﻿@page "/counter"
+@rendermode InteractiveServer
+@using BlazorService.Components.Service
+@inject CounterState State
+@inject CounterStorage Storage
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p>Current count: @State.CounterCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await State.InitializeAsync(Storage.GetCounterAsync);
+        State.OnChange += SaveCounterAsync;
+    }
+
+    private void IncrementCount()
+    {
+        State.CounterCount++;
+    }
+
+    private async void SaveCounterAsync()
+    {
+        await Storage.SaveCounterAsync(State.CounterCount);
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= SaveCounterAsync;
+    }
+}
